@@ -1,1 +1,1 @@
-"# Safeguard HSBC" 
+# Safeguard HSBC
