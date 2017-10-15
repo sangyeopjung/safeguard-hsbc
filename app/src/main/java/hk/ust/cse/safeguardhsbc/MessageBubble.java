@@ -1,6 +1,6 @@
 package hk.ust.cse.safeguardhsbc;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -34,16 +34,15 @@ public class MessageBubble {
         this.fromMe = fromMe;
     }
 
-    public void setDate(Date date) { this.date = date; }
-
     public String getDate() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy");
-        return simpleDateFormat.format(date);
+        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+        return dateFormat.format(date);
     }
 
     public String getTime() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("h:mm a");
-        return simpleDateFormat.format(date);
+        DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+        return dateFormat.format(date);
     }
 
+    public void setDate(Date date) { this.date = date; }
 }

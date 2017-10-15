@@ -47,7 +47,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         switch (view.getId()) {
             case R.id.sendButton:
                 String message = messageText.getText().toString();
-                // If the botmessage is not empty string
+                // If the message is not empty string
                 if (!message.equals("")) {
                     // Create a new MessageBubble object and initialize it with the information
                     MessageBubble messageBubble = new MessageBubble(message, true, new Date());
