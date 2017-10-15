@@ -1,4 +1,4 @@
-package org.astri.safeguardhsbc;
+package hk.ust.cse.safeguardhsbc;
 
 import org.junit.Test;
 

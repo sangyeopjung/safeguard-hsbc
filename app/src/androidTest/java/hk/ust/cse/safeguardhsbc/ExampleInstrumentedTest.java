@@ -1,4 +1,4 @@
-package org.astri.safeguardhsbc;
+package hk.ust.cse.safeguardhsbc;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

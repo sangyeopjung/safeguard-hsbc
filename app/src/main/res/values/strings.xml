@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">SafeguardHSBC</string>
+    <string name="app_name">HSBC Safeguard App</string>
+    <string name="messagehint">Type your message here</string>
+
 </resources>

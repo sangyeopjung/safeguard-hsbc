@@ -1,4 +1,4 @@
-package org.astri.safeguardhsbc.HttpUtility;
+package hk.ust.cse.safeguardhsbc.HttpUtility;
 
 import java.io.*;
 import java.net.HttpURLConnection;
