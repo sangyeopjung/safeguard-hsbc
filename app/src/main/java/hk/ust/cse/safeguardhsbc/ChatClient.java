@@ -4,10 +4,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.net.Uri
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,7 +32,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
     MyAdapter myAdapter = null;
     ArrayList<MessageBubble> messageBubbles = null;
     String URL = "http://10.89.220.20:10007";
-
+    int responseIndex = 0;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -137,7 +136,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         }
     }
 
-    public class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
+    private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
             PutUtility putUtility;
