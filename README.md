@@ -37,3 +37,5 @@
         String sim_nul = telephone.getSimSerialNumber();
         String op_name = telephone.getNetworkOperatorName();
         
+        https://stackoverflow.com/questions/10528464/how-to-monitor-sim-state-change
+        
