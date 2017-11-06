@@ -31,3 +31,9 @@
 ## Links
 * [Contest](https://www.personal.hsbc.com.hk/1/2/hk/personal/sfc/hsbcsafeguard)
 * [Abstract](https://docs.google.com/document/d/1SKvZQJvNpUtGRB75rFy161DirXmcudpyJeWOW0_pu28/edit)
+
+## Note
+        TelephonyManager telephone = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+        String sim_nul = telephone.getSimSerialNumber();
+        String op_name = telephone.getNetworkOperatorName();
+        
