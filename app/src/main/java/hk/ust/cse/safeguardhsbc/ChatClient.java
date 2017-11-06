@@ -1,8 +1,10 @@
 package hk.ust.cse.safeguardhsbc;
 
+import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.net.Uri;
+import android.net.Uri
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import java.io.IOException;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -19,10 +22,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.StringTokenizer;
 
-//import android.content.Context;
-//import android.content.Intent;
-//import android.content.SharedPreferences;
+import hk.ust.cse.safeguardhsbc.HttpUtility.PutUtility;
 
 public class ChatClient extends AppCompatActivity implements View.OnClickListener {
     Button sendButton;
@@ -30,7 +32,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
     ListView messageList;
     MyAdapter myAdapter = null;
     ArrayList<MessageBubble> messageBubbles = null;
-    int responseIndex = 0;
+    String URL = "http://10.89.220.20:10007";
 
 
     /**
@@ -86,6 +88,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
                     // Notify the adapter that the data has changed due to the addition
                     // of a new messageBubble object. This triggers an update of the ListView
                     myAdapter.notifyDataSetChanged();
+                    updatePhoneNum(messageText.getText().toString());
                     switch(responseIndex++){
                         /*
                         case 0:
@@ -134,20 +137,56 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         }
     }
 
-    public void sendMessage(String msg) {
-//        String[] incoming = {"Response 1",
-//                "Response 2",
-//                "Response 3",
-//                "Response 4",
-//                "Response 5"};
-//
-//        if (responseIndex < incoming.length) {
-//            MessageBubble messageBubble = new MessageBubble(incoming[responseIndex++], false,  new Date());
+    public class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            PutUtility putUtility;
+            String response = "";
+            try {
+                putUtility = new PutUtility(URL + "/api/account/updateAccount");
+                putUtility.setContentType("application/json");
+                putUtility.setRequestBody("{ \"id\" : \"543210\", \"phoneNumber\" : \"43214321\" }");
+                response = putUtility.getResponse();
+                System.out.println(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return response;
+        }
 
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+        }
+    }
+
+    public void updatePhoneNum(String pNum){
+        String response = "";
+        UpdatePhoneAsyncTask updatePhoneAsyncTask = new UpdatePhoneAsyncTask();
+        try {
+            response = updatePhoneAsyncTask.execute("asd").get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(! "".equals(response))
+            sendMessage(response);
+        else
+            sendMessage("Failed to update your phone number");
+    }
+
+    public void updateAddress(String address) {
+
+    }
+
+    public void updateEmail(String email) {
+
+    }
+
+    public void sendMessage(String msg) {
         MessageBubble messageBubble = new MessageBubble(msg, false, new Date());
         messageBubbles.add(messageBubble);
         myAdapter.notifyDataSetChanged();
-//        }
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
