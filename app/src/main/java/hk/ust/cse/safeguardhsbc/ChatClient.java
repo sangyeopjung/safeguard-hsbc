@@ -1,27 +1,26 @@
 package hk.ust.cse.safeguardhsbc;
 
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.io.IOException;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.StringTokenizer;
 
 import hk.ust.cse.safeguardhsbc.HttpUtility.PutUtility;
 
@@ -31,7 +30,8 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
     ListView messageList;
     MyAdapter myAdapter = null;
     ArrayList<MessageBubble> messageBubbles = null;
-    String URL = "http://10.89.220.20:10007";
+    String URL = "http://10.89.220.20:10010";
+    String ID = "A123456(7)";
     int responseIndex = 0;
 
     /**
@@ -64,11 +64,11 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        sendMessage("Hi Stitt! Have you changed your phone number?\n\t\t1. Yes\n\t\t2. No");
+        //sendMessage("Hi Stitt! Have you changed your phone number?\n\t\t1. Yes\n\t\t2. No");
         //sendMessage("\t\t1. Yes\n\t\t2. No");
 
-        //sendMessage("Hi, Stitt! How shall I help you?");
-        //sendMessage("1. Update Information \n2. Check Information");
+        sendMessage("Hi, David! How shall I help you?");
+        sendMessage("1. Update Information \n2. Check Information");
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
                     myAdapter.notifyDataSetChanged();
                     updatePhoneNum(messageText.getText().toString());
                     switch(responseIndex++){
-                        /*
+
                         case 0:
                             sendMessage("Which type of information do you want to update?\n\t\t1. Correspondence Address \n" +
                                     "\t\t2. Residential Address \n" +
@@ -97,67 +97,112 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
                                     "\t\t4. E-mail");
                             break;
                         case 1:
-                            sendMessage("Your current address is:\n123S, UG Hall 7, HKUST, Clear Water Bay, Kowloon, HK");
+                            sendMessage("Your current address is " + getAddress(ID));
+                                    //123S, UG Hall 7, HKUST, Clear Water Bay, Kowloon, HK"
                             sendMessage(
-                                    "Please type your new address following the below format.\nRoom, Flat, Floor, Building, Street, District, Region");
-                            break;
-                        case 2:
-                            sendMessage("Your updated address is now:\n1123R, UG Hall 1, HKUST, Clear Water Bay, Kowloon, HK");
-                            sendMessage("Do you want to update other information? \n\t\t1. Yes 2. No");
-                            break;
-                        case 3:
-                            sendMessage("Which type of information do you want to update?\n\t\t1. Correspondence Address \n" +
-                                    "\t\t2. Residential Address \n" +
-                                    "\t\t3. Phone number \n" +
-                                    "\t\t4. E-mail");
-                            break;
-                        case 4:
-                            sendMessage("Your current phone number is 22333000");
-                            sendMessage(
-                                    "Please type your new phone number without '-'.");
+    "Please type your new address following the below format.\nRoom, Flat, Floor, Building, Street, District, Region");
 
-                            break;
-                        case 5:
-                            sendMessage("Your updated phone number is now 88888888");
-                            sendMessage("Do you want to update other information? \n\t\t1. Yes 2. No");
-                            break;
-                        case 6:
-                            sendMessage("Thank you for playing your part in the fight against financial crime.");
-                            break;
-                            */
-                    }
-                    messageBubble = null;
-                    messageText.setText("");
-                }
-                break;
+    break;
+    case 2:
+    sendMessage("Your updated address is now:\n" + getAddress(ID));
+    sendMessage("Do you want to update other information? \n\t\t1. Yes 2. No");
+    break;
+    case 3:
+    sendMessage("Which type of information do you want to update?\n\t\t1. Correspondence Address \n" +
+                        "\t\t2. Residential Address \n" +
+                        "\t\t3. Phone number \n" +
+                        "\t\t4. E-mail");
+    break;
+    case 4:
+    sendMessage("Your current phone number is 22333000");
+    sendMessage(
+            "Please type your new phone number without '-'.");
 
-            default:
-                break;
+    break;
+    case 5:
+    sendMessage("Your updated phone number is now 88888888");
+    sendMessage("Do you want to update other information? \n\t\t1. Yes 2. No");
+    break;
+    case 6:
+    sendMessage("Thank you for playing your part in the fight against financial crime.");
+    break;
+
+}
+messageBubble = null;
+        messageText.setText("");
         }
+        break;
+
+default:
+        break;
+        }
+        }
+
+private class GetAddressAsyncTask extends AsyncTask<String, Void, String> {
+    @Override
+    protected String doInBackground(String... params) {
+        PutUtility putUtility;
+        String response = "";
+        try {
+            putUtility = new PutUtility(URL + "/api/account/getAccount");
+            String requestBody = "{\"id\" : \"" + ID + "\"}";
+            putUtility.setContentType("application/json");
+            putUtility.setRequestBody(requestBody);
+            response = putUtility.getResponse();
+            JSONObject jsonObj = new JSONObject(response);
+            response = jsonObj.optString("residentialAddress");
+            System.out.println(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
-    private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            PutUtility putUtility;
-            String response = "";
-            try {
-                putUtility = new PutUtility(URL + "/api/account/updateAccount");
-                putUtility.setContentType("application/json");
-                putUtility.setRequestBody("{ \"id\" : \"543210\", \"phoneNumber\" : \"43214321\" }");
-                response = putUtility.getResponse();
-                System.out.println(response);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return response;
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+    }
+}
+
+    public String getAddress(String ID) {
+        String response = "";
+        GetAddressAsyncTask getAddressAsyncTask = new GetAddressAsyncTask();
+        try {
+            response = getAddressAsyncTask.execute(ID).get();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-        }
+        if ("".equals(response))
+            sendMessage("Wrong ID number!!");
+
+        return response;
     }
+
+private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
+    @Override
+    protected String doInBackground(String... params) {
+        PutUtility putUtility;
+        String response = "";
+        try {
+            putUtility = new PutUtility(URL + "/api/account/updateAccount");
+            putUtility.setContentType("application/json");
+            putUtility.setRequestBody("{ \"id\" : \"543210\", \"phoneNumber\" : \"43214321\" }");
+            response = putUtility.getResponse();
+            System.out.println(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+    }
+}
 
     public void updatePhoneNum(String pNum){
         String response = "";
@@ -186,7 +231,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         MessageBubble messageBubble = new MessageBubble(msg, false, new Date());
         messageBubbles.add(messageBubble);
         myAdapter.notifyDataSetChanged();
-
+/*
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(android.R.drawable.ic_popup_reminder)
@@ -195,9 +240,11 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(001, mBuilder.build());
+
+        */
     }
 
-    /**
+   /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
