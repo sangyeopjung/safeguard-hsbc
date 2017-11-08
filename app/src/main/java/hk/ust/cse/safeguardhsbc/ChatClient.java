@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,11 +31,11 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
     ListView messageList;
     MyAdapter myAdapter = null;
     ArrayList<MessageBubble> messageBubbles = null;
-    String URL = "http://10.89.220.20:10010";
+    String URL = "http://10.89.220.20:10013";
     String ID = "A123456(7)";
     int responseIndex = 0;
-
     /**
+
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
@@ -67,7 +68,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         //sendMessage("Hi Stitt! Have you changed your phone number?\n\t\t1. Yes\n\t\t2. No");
         //sendMessage("\t\t1. Yes\n\t\t2. No");
 
-        sendMessage("Hi, David! How shall I help you?");
+        sendMessage("Hi, Chris! How shall I help you?");
         sendMessage("1. Update Information \n2. Check Information");
     }
 
@@ -87,7 +88,7 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
                     // Notify the adapter that the data has changed due to the addition
                     // of a new messageBubble object. This triggers an update of the ListView
                     myAdapter.notifyDataSetChanged();
-                    updatePhoneNum(messageText.getText().toString());
+                    //updatePhoneNum(messageText.getText().toString());
                     switch(responseIndex++){
 
                         case 0:
@@ -99,44 +100,49 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
                         case 1:
                             sendMessage("Your current address is " + getAddress(ID));
                                     //123S, UG Hall 7, HKUST, Clear Water Bay, Kowloon, HK"
-                            sendMessage(
-    "Please type your new address following the below format.\nRoom, Flat, Floor, Building, Street, District, Region");
+                            sendMessage("Please type your new address following the below format.\nRoom, Flat, Floor, Building, Street, District, Region");
+                            break;
+                        case 2:
+                            sendMessage("Your Input is invalid.");
+                            sendMessage("Please type your new address following the below format.\nRoom, Flat, Floor, Building, Street, District, Region");
+                            break;
+                        case 3:
+                            updateAddress(messageText.getText().toString());
+                            sendMessage("Your updated address is now:\n" + getAddress(ID));
+                            sendMessage("Do you want to update other information? \n\t\t1. Yes 2. No");
+                            break;
+                        case 4:
+                            sendMessage("Which type of information do you want to update?\n\t\t1. Correspondence Address \n" +
+                                            "\t\t2. Residential Address \n" +
+                                            "\t\t3. Phone number \n" +
+                                            "\t\t4. E-mail");
+                            break;
+                        case 5:
+                            sendMessage("Your current phone number is " + getPhoneNumber(ID));
+                            sendMessage("Please type your new phone number without '-'.");
 
-    break;
-    case 2:
-    sendMessage("Your updated address is now:\n" + getAddress(ID));
-    sendMessage("Do you want to update other information? \n\t\t1. Yes 2. No");
-    break;
-    case 3:
-    sendMessage("Which type of information do you want to update?\n\t\t1. Correspondence Address \n" +
-                        "\t\t2. Residential Address \n" +
-                        "\t\t3. Phone number \n" +
-                        "\t\t4. E-mail");
-    break;
-    case 4:
-    sendMessage("Your current phone number is 22333000");
-    sendMessage(
-            "Please type your new phone number without '-'.");
+                            break;
+                        case 6:
+                            updatePhoneNum(messageText.getText().toString());
+                            sendMessage("Your updated phone number is now " + getPhoneNumber(ID));
+                            sendMessage("Do you want to update other information? \n\t\t1. Yes 2. No");
+                            break;
+                        case 7:
+                            sendMessage("Thank you for playing your part in the fight against financial crime.");
+                            break;
 
-    break;
-    case 5:
-    sendMessage("Your updated phone number is now 88888888");
-    sendMessage("Do you want to update other information? \n\t\t1. Yes 2. No");
-    break;
-    case 6:
-    sendMessage("Thank you for playing your part in the fight against financial crime.");
-    break;
-
-}
-messageBubble = null;
-        messageText.setText("");
+                    }
+                    messageBubble = null;
+                    messageText.setText("");
         }
         break;
 
-default:
+        default:
         break;
         }
-        }
+    }
+
+
 
 private class GetAddressAsyncTask extends AsyncTask<String, Void, String> {
     @Override
@@ -165,7 +171,6 @@ private class GetAddressAsyncTask extends AsyncTask<String, Void, String> {
         super.onPostExecute(result);
     }
 }
-
     public String getAddress(String ID) {
         String response = "";
         GetAddressAsyncTask getAddressAsyncTask = new GetAddressAsyncTask();
@@ -181,6 +186,51 @@ private class GetAddressAsyncTask extends AsyncTask<String, Void, String> {
         return response;
     }
 
+    private class GetPhoneNumberAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            PutUtility putUtility;
+            String response = "";
+            try {
+                putUtility = new PutUtility(URL + "/api/account/getAccount");
+                String requestBody = "{\"id\" : \"" + ID + "\"}";
+                putUtility.setContentType("application/json");
+                putUtility.setRequestBody(requestBody);
+                response = putUtility.getResponse();
+                JSONObject jsonObj = new JSONObject(response);
+                response = jsonObj.optString("phoneNumber");
+                System.out.println(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+        }
+    }
+
+    public String getPhoneNumber(String ID) {
+        String response = "";
+        GetPhoneNumberAsyncTask GetPhoneNumberAsyncTask = new GetPhoneNumberAsyncTask();
+        try {
+            response = GetPhoneNumberAsyncTask.execute(ID).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if ("".equals(response))
+            sendMessage("Wrong ID number!!");
+
+        return response;
+    }
+
+
+
 private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
@@ -188,8 +238,9 @@ private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
         String response = "";
         try {
             putUtility = new PutUtility(URL + "/api/account/updateAccount");
+            String requestBody = "{ \"id\" : \""+ ID +"\", \"phoneNumber\" : \""+ params[0] +"\" }";
             putUtility.setContentType("application/json");
-            putUtility.setRequestBody("{ \"id\" : \"543210\", \"phoneNumber\" : \"43214321\" }");
+            putUtility.setRequestBody(requestBody);
             response = putUtility.getResponse();
             System.out.println(response);
         } catch (IOException e) {
@@ -208,19 +259,55 @@ private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
         String response = "";
         UpdatePhoneAsyncTask updatePhoneAsyncTask = new UpdatePhoneAsyncTask();
         try {
-            response = updatePhoneAsyncTask.execute("asd").get();
+            response = updatePhoneAsyncTask.execute(pNum).get();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         if(! "".equals(response))
-            sendMessage(response);
+            Log.d("","");
         else
             sendMessage("Failed to update your phone number");
     }
 
-    public void updateAddress(String address) {
+    private class UpdateAddressAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            PutUtility putUtility;
+            String response = "";
+            try {
+                putUtility = new PutUtility(URL + "/api/account/updateAccount");
+                String requestBody = "{ \"id\" : \""+ ID +"\", \"residentialAddress\" : \""+ params[0] +"\" }";
+                putUtility.setContentType("application/json");
+                putUtility.setRequestBody(requestBody);
+                response = putUtility.getResponse();
+                System.out.println(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return response;
+        }
 
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+        }
+    }
+
+
+    public void updateAddress(String address) {
+        String response = "";
+        UpdateAddressAsyncTask UpdateAddressAsyncTask = new UpdateAddressAsyncTask();
+        try {
+            response = UpdateAddressAsyncTask.execute(address).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(! "".equals(response))
+            Log.d("","");
+        else
+            sendMessage("Failed to update your residential address");
     }
 
     public void updateEmail(String email) {
