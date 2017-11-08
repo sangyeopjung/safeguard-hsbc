@@ -1,27 +1,24 @@
 package hk.ust.cse.safeguardhsbc;
 
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
-import android.app.NotificationManager;
-import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.io.IOException;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.StringTokenizer;
 
 import hk.ust.cse.safeguardhsbc.HttpUtility.PutUtility;
 
@@ -64,6 +61,10 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+        Intent infoCheckService = new Intent(this, InfoCheckService.class);
+        startService(infoCheckService);
+
         sendMessage("Hi Stitt! Have you changed your phone number?\n\t\t1. Yes\n\t\t2. No");
         //sendMessage("\t\t1. Yes\n\t\t2. No");
 
@@ -187,14 +188,14 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         messageBubbles.add(messageBubble);
         myAdapter.notifyDataSetChanged();
 
-        NotificationCompat.Builder mBuilder =
+        /*NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(android.R.drawable.ic_popup_reminder)
                         .setContentTitle("Phone Number Change Detected")
                         .setContentText("Hi Stitt! Have you changed your phone number?");
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(001, mBuilder.build());
+        mNotificationManager.notify(001, mBuilder.build());*/
     }
 
     /**
