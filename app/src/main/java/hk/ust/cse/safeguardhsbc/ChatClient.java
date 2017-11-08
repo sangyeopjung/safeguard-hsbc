@@ -1,9 +1,13 @@
 package hk.ust.cse.safeguardhsbc;
 
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -65,6 +69,10 @@ public class ChatClient extends AppCompatActivity implements View.OnClickListene
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+        Intent infoCheckService = new Intent(this, InfoCheckService.class);
+        startService(infoCheckService);
+
         //sendMessage("Hi Stitt! Have you changed your phone number?\n\t\t1. Yes\n\t\t2. No");
         //sendMessage("\t\t1. Yes\n\t\t2. No");
 
@@ -318,7 +326,7 @@ private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
         MessageBubble messageBubble = new MessageBubble(msg, false, new Date());
         messageBubbles.add(messageBubble);
         myAdapter.notifyDataSetChanged();
-/*
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(android.R.drawable.ic_popup_reminder)
@@ -328,10 +336,9 @@ private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(001, mBuilder.build());
 
-        */
     }
 
-   /**
+    /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
