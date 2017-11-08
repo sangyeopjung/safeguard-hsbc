@@ -1,10 +1,13 @@
 package hk.ust.cse.safeguardhsbc;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -331,7 +334,7 @@ private class UpdatePhoneAsyncTask extends AsyncTask<String, Void, String> {
                         .setContentText("Hi Stitt! Have you changed your phone number?");
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(001, mBuilder.build());*/
+        mNotificationManager.notify(001, mBuilder.build());
 
     }
 
